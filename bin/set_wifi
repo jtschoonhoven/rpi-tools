@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# exit on failure
+set -e
+
+help() {
+cat << EOF
+
+DESCRIPTION
+    overwrite wifi config in /etc/wpa_supplicant/wpa_supplicant.conf
+
+USAGE
+    ./set_wifi --ssid NETWORK --password PASSWORD
+
+EOF
+}
+
+# ensure script is run as root
+if [ "$(id -u)" != "0" ]; then
+  echo "permission denied (try sudo)"
+  exit 1
+fi
+
+# parse args https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
+while (( "$#" )); do
+    case "$1" in
+        -s|--ssid)
+            SSID=$2
+            shift 2
+            ;;
+        -p|--password)
+            PASSWORD=$2
+            shift 2
+            ;;
+        --) # end argument parsing
+            shift
+            break
+            ;;
+        -*|--*=) # unsupported flags
+            echo "invalid option $1" >&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+# SSID is always required
+if [ -z $SSID ]; then
+    echo "ERROR: --ssid (-s) is a required argument" >&2
+    help
+    exit 1
+fi
+
+# password is always required
+if [ -z $PASSWORD ]; then
+    echo "ERROR: --password (-p) is a required argument" >&2
+    help
+    exit 1
+fi
+
+cat << EOF > /etc/wpa_supplicant/wpa_supplicant.conf
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=US
+
+network={
+    ssid="$SSID"
+    psk="$PASSWORD"
+}
+EOF
+
+echo "applying changes"
+echo "WARNING: if you are connected by SSH, this will drop your connection"
+wpa_cli -i eth0 reconfigure
+wpa_cli -i wlan0 reconfigure
+
+echo "restarting network interfaces"
+ifdown --all
+ifup --all
+echo "success"

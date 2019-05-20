@@ -1,0 +1,107 @@
+#!/bin/bash
+DEFAULT_SUBNET="1"
+
+# exit on failure
+set -e
+
+help() {
+cat << EOF
+
+DESCRIPTION
+    overwrite network config to set static IP in /etc/dhcpcd.conf
+    assumes netmask 255.255.255.0
+
+USAGE
+    ./set_static_ip --host 254 --subnet 1
+
+EOF
+}
+
+# ensure script is run as root
+if [ "$(id -u)" != "0" ]; then
+  echo "permission denied (try sudo)"
+  exit 1
+fi
+
+# parse args https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
+while (( "$#" )); do
+    case "$1" in
+        -s|--subnet)
+            SUBNET=$2
+            shift 2
+            ;;
+        -h|--host)
+            HOST=$2
+            shift 2
+            ;;
+        --) # end argument parsing
+            shift
+            break
+            ;;
+        -*|--*=) # unsupported flags
+            echo "invalid option $1" >&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+# host is always required
+if [ -z $HOST ]; then
+    echo "ERROR: --host (-h) is a required argument" >&2
+    help
+    exit 1
+fi
+
+# use default if subnet is not specified
+if [ -z $SUBNET ]; then
+    SUBNET=$DEFAULT_SUBNET
+fi
+
+cat << EOF > /etc/dhcpcd.conf
+# Inform the DHCP server of our hostname for DDNS.
+hostname
+
+# Use the hardware address of the interface for the Client ID.
+clientid
+
+# Persist interface configuration when dhcpcd exits.
+persistent
+
+# Rapid commit support.
+option rapid_commit
+
+# A list of options to request from the DHCP server.
+option domain_name_servers, domain_name, domain_search, host_name
+option classless_static_routes
+
+# Most distributions have NTP support.
+option ntp_servers
+
+# Respect the network MTU. This is applied to DHCP routes.
+option interface_mtu
+
+# A ServerID is required by RFC2131.
+require dhcp_server_identifier
+
+# Generate Stable Private IPv6 Addresses instead of hardware based ones
+slaac private
+
+# static IP configuration:
+interface eth0
+static ip_address=192.168.$SUBNET.$HOST/24
+static routers=192.168.$SUBNET.1
+static domain_name_servers=192.168.$SUBNET.1
+
+# static IP configuration:
+interface wlan0
+static ip_address=192.168.$SUBNET.$HOST/24
+static routers=192.168.$SUBNET.1
+static domain_name_servers=192.168.$SUBNET.1
+EOF
+
+echo "applying changes"
+echo "WARNING: if you are connected by SSH, this will drop your connection"
+ifconfig eth0 "192.168.$SUBNET.$HOST" netmask "255.255.255.0"
+ifconfig wlan0 "192.168.$SUBNET.$HOST" netmask "255.255.255.0"
+echo "success"
