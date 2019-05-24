@@ -2,6 +2,7 @@
 CLI utilities for working with Raspberry Pis.
 
 ## Commands
+CLI commands executable from the `bin` directory.
 
 ### `exec_usb`
 ```
@@ -33,6 +34,19 @@ OPTIONS
     
     -c, --command
         command to execute on each remote client
+```
+
+### `pull_all`
+```
+DESCRIPTION
+    execute `git pull` in all subdirectories of a given directory
+
+USAGE
+    ./pull_all -d /home/pi/src
+
+OPTIONS
+    -d, --dir
+        git pull in all subdirectories of this path
 ```
 
 ### `set_ip`

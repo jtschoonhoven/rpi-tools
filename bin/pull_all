@@ -1,0 +1,48 @@
+#!/bin/bash
+# intentionally does not `set -e` to allow failure in non-git directories
+DEFAULT_SOURCE_DIR=/home/pi
+
+help() {
+cat << EOF
+
+DESCRIPTION
+    execute `git pull` in all subdirectories of a given directory
+
+USAGE
+    ./pull_all -d /home/pi/src
+
+OPTIONS
+    -d, --dir
+        git pull in all subdirectories of this path
+
+EOF
+}
+
+# parse args https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
+while (( "$#" )); do
+    case "$1" in
+        -d|--dir)
+            SOURCE_DIR=$2
+            shift 2
+            ;;
+        --) # end argument parsing
+            shift
+            break
+            ;;
+        -*|--*=) # unsupported flags
+            echo "invalid option $1" >&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+# use default if source dir is not specified
+if [ -z $SOURCE_DIR ]; then
+    SOURCE_DIR=$DEFAULT_SOURCE_DIR
+fi
+
+for dir in $SOURCE_DIR/*/; do
+    echo "Pulling remote changes for $dir"
+    git -C "$dir" pull
+done
