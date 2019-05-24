@@ -49,6 +49,25 @@ OPTIONS
         git pull in all subdirectories of this path
 ```
 
+### `runit`
+```
+DESCRIPTION
+    manage any executable with `runit` so it runs continuously in the background on boot
+
+USAGE
+    ./runit --path-to-executable ./pull_all --args "--dir /home/pi" --delay-seconds 60
+
+OPTIONS
+    -p, --path-to-executable
+        path to the executabel file to manage with runit
+
+    -a, --args
+        arguments to pass to the executable
+
+    -d, --delay-seconds
+        time to sleep after the executable is called
+```
+
 ### `set_ip`
 ```
 DESCRIPTION
