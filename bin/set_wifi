@@ -12,6 +12,13 @@ DESCRIPTION
 USAGE
     ./set_wifi --ssid NETWORK --password PASSWORD
 
+OPTIONS
+    -s, --ssid
+        name of network to connect to
+    
+    -p, --password
+        network password
+
 EOF
 }
 

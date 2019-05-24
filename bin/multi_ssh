@@ -11,6 +11,16 @@ DESCRIPTION
 USAGE
     ./multi_ssh --user pi --command "sudo reboot" --host 127.0.0.1 --host 127.0.0.2
 
+OPTIONS
+    -u, --user
+        username to log in with
+
+    -h, --host
+        hostname or IP to access
+    
+    -c, --command
+        command to execute on each remote client
+
 EOF
 }
 
