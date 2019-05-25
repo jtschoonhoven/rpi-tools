@@ -6,7 +6,7 @@ help() {
 cat << EOF
 
 DESCRIPTION
-    mount any available USB drive and execute any expected commands
+    mount any available USB drive and execute any file named "exec"
 
 USAGE
     ./exec_usb

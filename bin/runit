@@ -12,17 +12,14 @@ DESCRIPTION
     manage any executable with `runit` so it runs continuously in the background on boot
 
 USAGE
-    ./runit --command /home/pi/rpi_tools/bin/pull_all --args "--dir /home/pi" --delay-seconds 60
+    ./runit --name autoreboot --command "sudo reboot"  --delay-seconds 3600
 
 OPTIONS
     -n, --name
-        optional name of the runit-managed task (defaults to name of the command)
+        name of the runit-managed task
 
     -c, --command
-        path to the executabel file to manage with runit
-
-    -a, --args
-        optional arguments to pass to the executable
+        command or absolute path to executable (will be run as root)
 
     -d, --delay-seconds
         time to wait after the executable is called before running again
@@ -40,10 +37,6 @@ while (( "$#" )); do
             ;;
         -c|--command)
             command="$2"
-            shift 2
-            ;;
-        -a|--args)
-            args="$2"
             shift 2
             ;;
         -d|--delay-seconds)
@@ -68,6 +61,13 @@ if [ "$(id -u)" != "0" ]; then
   exit 1
 fi
 
+# name is always required
+if [ -z $name ]; then
+    echo "ERROR: --name (-n) is a required argument" >&2
+    help
+    exit 1
+fi
+
 # command is always required
 if [ -z $command ]; then
     echo "ERROR: --command (-c) is a required argument" >&2
@@ -78,11 +78,6 @@ fi
 # use default if delay is not specified
 if [ -z "${delay}" ]; then
     delay=$DEFAULT_DELAY_SECONDS
-fi
-
-# use default if name is not specified
-if [ -z "${name}" ]; then
-    name=$(basename $command)
 fi
 
 # install each package if not exists
@@ -106,7 +101,7 @@ touch "/var/log/$name/current"
 # write runit config to /etc/sv and make executable
 run_path="/etc/sv/$name/run"
 echo "#!/bin/bash" > "$run_path"
-echo "$command $args" >> "$run_path"
+echo "$command" >> "$run_path"
 echo "sleep $delay" >> "$run_path"
 chmod +x "$run_path"
 

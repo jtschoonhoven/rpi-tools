@@ -1,13 +1,25 @@
 # rpi-tools
 CLI utilities for working with Raspberry Pis.
 
+## Recipies
+
+### Automatically Run Git Pull For All Repos
+```sh
+bin/runit --name "pull_all" --command "/path/to/rpi_tools/bin/pull_all --dir /path/to/source/dir"
+```
+
+### Automatically Reboot Every Hour
+```sh
+bin/runit --name "autoreboot" --command "sleep 1h && sudo reboot"
+```
+
 ## Commands
 CLI commands executable from the `bin` directory.
 
-### `exec_usb`
+### exec_usb
 ```
 DESCRIPTION
-    mount any available USB drive and execute any expected commands
+    mount any available USB drive and execute any file named "exec"
 
 USAGE
     ./exec_usb
@@ -17,7 +29,7 @@ OPTIONS
         path to directory containing media files (/mnt/usb)
 ```
 
-### `multi_ssh`
+### multi_ssh
 ```
 DESCRIPTION
     execute shell commands across one or more remote hosts
@@ -36,7 +48,7 @@ OPTIONS
         command to execute on each remote client
 ```
 
-### `pull_all`
+### pull_all
 ```
 DESCRIPTION
     execute `git pull` in all subdirectories of a given directory
@@ -49,26 +61,26 @@ OPTIONS
         git pull in all subdirectories of this path
 ```
 
-### `runit`
+### runit
 ```
 DESCRIPTION
     manage any executable with `runit` so it runs continuously in the background on boot
 
 USAGE
-    ./runit --path-to-executable ./pull_all --args "--dir /home/pi" --delay-seconds 60
+    ./runit --name autoreboot --command "sudo reboot"  --delay-seconds 3600
 
 OPTIONS
-    -p, --path-to-executable
-        path to the executabel file to manage with runit
+    -n, --name
+        name of the runit-managed task
 
-    -a, --args
-        arguments to pass to the executable
+    -c, --command
+        command or absolute path to executable (will be run as root)
 
     -d, --delay-seconds
-        time to sleep after the executable is called
+        time to wait after the executable is called before running again
 ```
 
-### `set_ip`
+### set_ip
 ```
 DESCRIPTION
     overwrite network config to set static IP in /etc/dhcpcd.conf
@@ -85,7 +97,7 @@ OPTIONS
         the host part of the address (xxx.xxx.xxx.HOST)
 ```
 
-### `set_wifi`
+### set_wifi
 ```
 DESCRIPTION
     overwrite wifi config in /etc/wpa_supplicant/wpa_supplicant.conf
