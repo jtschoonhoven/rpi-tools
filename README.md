@@ -5,19 +5,30 @@ CLI utilities for working with Raspberry Pis.
 
 ### Automatically Run Git Pull For All Repos
 ```sh
-bin/runit --name "pull_all" --command "/path/to/rpi_tools/bin/pull_all --dir /path/to/source/dir"
+bin/runit \
+    --name "pull_all" \
+    --command "/path/to/rpi_tools/bin/pull_all --dir /path/to/source/dir"
+```
+
+### Automatically Mount Storage Volumes to /mnt/usb
+```sh
+bin/runit \
+    --name "automount" \
+    --command "/path/to/rpi_tools/bin/automount" \
+    --exit-command "/path/to/rpi_tools/bin/automount --unmount""
 ```
 
 ### Automatically Reboot Every Hour
 ```sh
-bin/runit --name "autoreboot" --command "sleep 1h && sudo reboot"
+bin/runit \
+    --name "autoreboot" \
+    --command "sleep 1h && sudo reboot"
 ```
 
 ## Commands
 CLI commands executable from the `bin` directory.
 
 ### automount
-
 ```
 DESCRIPTION
     search /dev/sda* for any unmounted storage volumes and mount them to the given path
@@ -31,19 +42,6 @@ OPTIONS
 
     -u, --unmount
         optionally set this flag to *un*mount a volume mounted to the given path
-```
-
-### exec_usb
-```
-DESCRIPTION
-    mount any available USB drive and execute any file named "exec"
-
-USAGE
-    ./exec_usb
-
-OPTIONS
-    -d, --directory
-        path to directory containing media files (/mnt/usb)
 ```
 
 ### install_common_deps
