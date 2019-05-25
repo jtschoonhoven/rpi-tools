@@ -1,5 +1,5 @@
 #!/bin/bash
-DEPENDENCIES="git vim python3 python3-pip python-pip runit runit-systemd libjpeg-dev zlib1g-dev"
+DEPENDENCIES="git vim socat omxplayer x11-xserver-utils fbi python3 python3-pip python-pip runit runit-systemd libjpeg-dev zlib1g-dev"
 
 help() {
 cat << EOF
@@ -8,7 +8,7 @@ DESCRIPTION
     install common packages that may not be included in a fresh RPI
 
 USAGE
-    ./install_essentials
+    ./install_common_deps
 
 EOF
 }

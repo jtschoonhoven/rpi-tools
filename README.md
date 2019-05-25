@@ -29,13 +29,13 @@ OPTIONS
         path to directory containing media files (/mnt/usb)
 ```
 
-### install_essentials
+### install_common_deps
 ```
 DESCRIPTION
     install common packages that may not be included in a fresh RPI
 
 USAGE
-    ./install_essentials
+    ./install_common_deps
 ```
 
 ### multi_ssh
