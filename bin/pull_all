@@ -42,7 +42,8 @@ if [ -z $SOURCE_DIR ]; then
     SOURCE_DIR=$DEFAULT_SOURCE_DIR
 fi
 
+# perform `git pull` in each directory
 for dir in $SOURCE_DIR/*/; do
     echo "Pulling remote changes for $dir"
-    git -C "$dir" pull
+    git -C "$dir" pull 2>&1  # direct stderr to stdout so svlogd picks it up
 done
