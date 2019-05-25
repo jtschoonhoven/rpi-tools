@@ -70,21 +70,21 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # name is always required
-if [ -z $name ]; then
+if [ -z "$name" ]; then
     echo "ERROR: --name (-n) is a required argument" >&2
     help
     exit 1
 fi
 
 # command is always required
-if [ -z $command ]; then
+if [ -z "$command" ]; then
     echo "ERROR: --command (-c) is a required argument" >&2
     help
     exit 1
 fi
 
 # use default if delay is not specified
-if [ -z "${delay}" ]; then
+if [ -z "$delay" ]; then
     delay=$DEFAULT_DELAY_SECONDS
 fi
 

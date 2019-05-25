@@ -52,14 +52,14 @@ while (( "$#" )); do
 done
 
 # SSID is always required
-if [ -z $SSID ]; then
+if [ -z "$SSID" ]; then
     echo "ERROR: --ssid (-s) is a required argument" >&2
     help
     exit 1
 fi
 
 # password is always required
-if [ -z $PASSWORD ]; then
+if [ -z "$PASSWORD" ]; then
     echo "ERROR: --password (-p) is a required argument" >&2
     help
     exit 1

@@ -53,14 +53,14 @@ while (( "$#" )); do
 done
 
 # at least one host is required
-if [ -z $HOST ]; then
+if [ -z "$HOST" ]; then
     echo "ERROR: --host (-h) is a required argument" >&2
     help
     exit 1
 fi
 
 # use default if command is not specified
-if [ -z "${COMMAND}" ]; then
+if [ -z "$COMMAND" ]; then
     COMMAND=$DEFAULT_COMMAND
 fi
 
