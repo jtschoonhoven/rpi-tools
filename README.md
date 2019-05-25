@@ -7,15 +7,15 @@ CLI utilities for working with Raspberry Pis.
 ```sh
 bin/runit \
     --name "autopull" \
-    --command "/path/to/rpi_tools/bin/pull_all --dir /path/to/source/dir"
+    --command "/home/pi/rpi_tools/bin/pull_all --dir /path/to/source/dir"
 ```
 
 ### Automatically Mount Storage Volumes to /mnt/usb
 ```sh
 bin/runit \
     --name "automount" \
-    --command "/path/to/rpi_tools/bin/automount" \
-    --exit-command "/path/to/rpi_tools/bin/automount --unmount"
+    --command "/home/pi/rpi_tools/bin/automount" \
+    --exit-command "/home/pi/rpi_tools/bin/automount --unmount"
 ```
 
 ### Automatically Reboot Every Hour

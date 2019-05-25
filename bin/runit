@@ -92,7 +92,7 @@ fi
 
 # use the current user to execute the command if not otherwise set
 if [ -z "$user" ]; then
-    user=whoami
+    user=$(whoami)
 fi
 
 # use default if delay is not specified
