@@ -1,6 +1,7 @@
 #!/bin/bash
 DEPENDENCIES="runit runit-systemd"
 DEFAULT_DELAY_SECONDS=60
+LOG_PATH="/var/log"
 
 # exit on failure
 set -eo pipefail
@@ -21,6 +22,9 @@ OPTIONS
     -c, --command
         command or absolute path to executable (will be run as root)
 
+    -e, --exit-command
+        teardown logic to execute when managed command is halted
+
     -d, --delay-seconds
         time to wait after the executable is called before running again
 
@@ -37,6 +41,10 @@ while (( "$#" )); do
             ;;
         -c|--command)
             command="$2"
+            shift 2
+            ;;
+        -e|--exit-command)
+            exit_command="$2"
             shift 2
             ;;
         -d|--delay-seconds)
@@ -89,7 +97,6 @@ for PACKAGE in $DEPENDENCIES; do
     fi
 done
 
-# use the filename as the name of the runit command
 echo "installing command "$name" to /etc/sv/$name"
 
 # create directories and files used by runit
@@ -98,17 +105,27 @@ mkdir -p "/etc/sv/$name/log"
 mkdir -p "/etc/service"
 touch "/var/log/$name/current"
 
-# write runit config to /etc/sv and make executable
+# write runit command to /etc/sv/{name}/run and make executable
 run_path="/etc/sv/$name/run"
 echo "#!/bin/bash" > "$run_path"
+echo "set -x" > "$run_path"
+echo "exec 2>&1" > "$run_path"  # redirect all stderr to stdout for svlogd
 echo "$command" >> "$run_path"
 echo "sleep $delay" >> "$run_path"
 chmod +x "$run_path"
 
-# configure logging
+# write teardown command to /etc/sv/{name}/finish and make executable
+finish_path="/etc/sv/$name/finish"
+echo "#!/bin/bash" > "$finish_path"
+echo "set -x" > "$finish_path"
+echo "exec 2>&1" > "$finish_path"  # redirect all stderr to stdout for svlogd
+echo "$exit_command" >> "$finish_path"
+chmod +x "$finish_path"
+
+# write logging config to /etc/sv/{name}/log/run and make executable
 log_run_path="/etc/sv/$name/log/run"
 echo "#!/bin/bash" > "$log_run_path"
-echo "exec svlogd -tt /var/log/$name" >> "$log_run_path"
+echo "exec svlogd -tt $LOG_PATH/$name" >> "$log_run_path"
 chmod +x "$log_run_path"
 
 # initialize runit by symlinking /etc/service (if not exists)
