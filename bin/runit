@@ -23,10 +23,13 @@ OPTIONS
         command or absolute path to executable (will be run as root)
 
     -e, --exit-command
-        teardown logic to execute when managed command is halted
+        optional teardown logic to execute when managed command is halted
+
+    -u, --user
+        optional alternate user to assume before executing command and exit-command (default is same as runit process)
 
     -d, --delay-seconds
-        time to wait after the executable is called before running again
+        optional time to wait after the executable is called before running again
 
 EOF
 }
@@ -45,6 +48,10 @@ while (( "$#" )); do
             ;;
         -e|--exit-command)
             exit_command="$2"
+            shift 2
+            ;;
+        -u|--user)
+            user="$2"
             shift 2
             ;;
         -d|--delay-seconds)
@@ -83,6 +90,11 @@ if [ -z "$command" ]; then
     exit 1
 fi
 
+# use the current user to execute the command if not otherwise set
+if [ -z "$user" ]; then
+    user=whoami
+fi
+
 # use default if delay is not specified
 if [ -z "$delay" ]; then
     delay=$DEFAULT_DELAY_SECONDS
@@ -108,8 +120,9 @@ touch "/var/log/$name/current"
 # write runit command to /etc/sv/{name}/run and make executable
 run_path="/etc/sv/$name/run"
 echo "#!/bin/bash" > "$run_path"
-echo "set -x" > "$run_path"
-echo "exec 2>&1" > "$run_path"  # redirect all stderr to stdout for svlogd
+echo "set -x" >> "$run_path"
+echo "exec 2>&1" >> "$run_path"  # redirect all stderr to stdout for svlogd
+echo "su $user" >> "$run_path"
 echo "$command" >> "$run_path"
 echo "sleep $delay" >> "$run_path"
 chmod +x "$run_path"
@@ -117,8 +130,9 @@ chmod +x "$run_path"
 # write teardown command to /etc/sv/{name}/finish and make executable
 finish_path="/etc/sv/$name/finish"
 echo "#!/bin/bash" > "$finish_path"
-echo "set -x" > "$finish_path"
-echo "exec 2>&1" > "$finish_path"  # redirect all stderr to stdout for svlogd
+echo "set -x" >> "$finish_path"
+echo "exec 2>&1" >> "$finish_path"  # redirect all stderr to stdout for svlogd
+echo "su $user" >> "$finish_path"
 echo "$exit_command" >> "$finish_path"
 chmod +x "$finish_path"
 
