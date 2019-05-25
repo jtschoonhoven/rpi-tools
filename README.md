@@ -15,7 +15,8 @@ bin/runit \
 bin/runit \
     --name "automount" \
     --command "/home/pi/rpi_tools/bin/automount" \
-    --exit-command "/home/pi/rpi_tools/bin/automount --unmount"
+    --exit-command "/home/pi/rpi_tools/bin/automount --unmount" \
+    --delay 5
 ```
 
 ### Automatically Reboot Every Hour
