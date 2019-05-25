@@ -16,6 +16,23 @@ bin/runit --name "autoreboot" --command "sleep 1h && sudo reboot"
 ## Commands
 CLI commands executable from the `bin` directory.
 
+### automount
+
+```
+DESCRIPTION
+    search /dev/sda* for any unmounted storage volumes and mount them to the given path
+
+USAGE
+    ./mount --path /mnt/usb --unmount
+
+OPTIONS
+    -p, --path
+        optional path at which to mount the device (defaults to /mnt/usb)
+
+    -u, --unmount
+        optionally set this flag to *un*mount a volume mounted to the given path
+```
+
 ### exec_usb
 ```
 DESCRIPTION

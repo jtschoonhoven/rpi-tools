@@ -1,0 +1,101 @@
+#!/bin/bash
+DEFAULT_MOUNT_PATH="/mnt/usb"
+
+set -eo pipefail
+
+help() {
+cat << EOF
+
+DESCRIPTION
+    search /dev/sda* for any unmounted storage volumes and mount them to the given path
+
+USAGE
+    ./mount --path /mnt/usb --unmount
+
+OPTIONS
+    -p, --path
+        optional path at which to mount the device (defaults to /mnt/usb)
+
+    -u, --unmount
+        optionally set this flag to *un*mount a volume mounted to the given path
+
+EOF
+}
+
+# parse args https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
+PARAMS=""
+while (( "$#" )); do
+    case "$1" in
+        -p|--path)
+            path="$2"
+            shift 2
+            ;;
+        -u|--unmount)
+            unmount=1
+            shift 1
+            ;;
+        --) # end argument parsing
+            shift
+            break
+            ;;
+        -*|--*=) # unsupported flags
+            echo "invalid option $1" >&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+# ensure script is run as root
+if [ "$(id -u)" != "0" ]; then
+  echo "permission denied (try sudo)"
+  exit 1
+fi
+
+# use default path if not specified
+if [ -z "$path" ]; then
+    path=$DEFAULT_MOUNT_PATH
+fi
+
+# create mount directory if not exists
+if [ ! -d "$path" ]; then
+    echo "creating directory at $path"
+    mkdir -p $path
+fi
+
+# handle unmount
+if [ ! -z $unmount ]; then
+    # exit if no volume is mounted to the given path
+    if ! grep -qs "$path " /proc/mounts; then
+        echo "no volume is mounted at $path: exiting"
+        exit 1 
+    fi
+
+    # get the path to the corresponding mounted volume from /proc/mounts and unmount
+    set -- $(grep "$path " /proc/mounts)  # see https://stackoverflow.com/a/2440602
+    echo "unmounting volume $1 mounted at $path"
+    if ! umount "$1"; then
+        echo "unmount failed"
+        exit 1
+    fi
+
+    echo "unmount succeeded"
+    exit 0
+fi
+
+# exit if a volume is already mounted at the given path
+if grep -qs "$path " /proc/mounts; then
+    set -- $(grep "$path " /proc/mounts)  # see https://stackoverflow.com/a/2440602
+    echo "volume $1 is already mounted at $path: exiting"
+    exit 1 
+fi
+
+# mount the volume at the given path
+for volume_path in /dev/sda*; do
+    [ -b "$volume_path" ] || continue  # "-b" checks if the path is a "block device", e.g. a flash or disk drive
+    if mount "$volume_path" "$path" 2> /dev/null; then
+        echo "mounted drive $volume_path to $path"
+        exit 0
+    fi
+    echo "failed to mount $volume_path to $path: skipping"
+done
