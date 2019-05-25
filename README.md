@@ -6,7 +6,7 @@ CLI utilities for working with Raspberry Pis.
 ### Automatically Run Git Pull For All Repos
 ```sh
 bin/runit \
-    --name "pull_all" \
+    --name "autopull" \
     --command "/path/to/rpi_tools/bin/pull_all --dir /path/to/source/dir"
 ```
 
@@ -15,7 +15,7 @@ bin/runit \
 bin/runit \
     --name "automount" \
     --command "/path/to/rpi_tools/bin/automount" \
-    --exit-command "/path/to/rpi_tools/bin/automount --unmount""
+    --exit-command "/path/to/rpi_tools/bin/automount --unmount"
 ```
 
 ### Automatically Reboot Every Hour
