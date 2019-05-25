@@ -1,0 +1,32 @@
+#!/bin/bash
+DEPENDENCIES="git vim python3 python3-pip python-pip runit runit-systemd libjpeg-dev zlib1g-dev"
+
+help() {
+cat << EOF
+
+DESCRIPTION
+    install common packages that may not be included in a fresh RPI
+
+USAGE
+    ./install_essentials
+
+EOF
+}
+
+# ensure script is run as root
+if [ "$(id -u)" != "0" ]; then
+  echo "permission denied (try sudo)"
+  exit 1
+fi
+
+# update then install all dependencies (if not already installed)
+apt-get update
+for PACKAGE in $DEPENDENCIES; do
+    if ! dpkg-query -l "$PACKAGE" > /dev/null; then
+        apt-get -y install "$PACKAGE"
+    else
+        echo "$PACKAGE is already installed"
+    fi
+done
+
+echo "install finished"
