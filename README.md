@@ -5,23 +5,23 @@ CLI utilities for working with Raspberry Pis.
 
 ### Automatically Run Git Pull For All Repos
 ```sh
-bin/runit \
+sudo bin/runit \
     --name "autopull" \
-    --command "/home/pi/rpi_tools/bin/pull_all --dir /path/to/source/dir"
+    --command "/home/pi/rpi_-ools/bin/pull_all --dir /path/to/source/dir"
 ```
 
 ### Automatically Mount Storage Volumes to /mnt/usb
 ```sh
-bin/runit \
+sudo bin/runit \
     --name "automount" \
-    --command "/home/pi/rpi_tools/bin/automount" \
-    --exit-command "/home/pi/rpi_tools/bin/automount --unmount" \
-    --delay 5
+    --command "/home/pi/rpi-tools/bin/automount" \
+    --exit-command "/home/pi/rpi-tools/bin/automount --unmount" \
+    --delay-seconds 5
 ```
 
 ### Automatically Reboot Every Hour
 ```sh
-bin/runit \
+sudo bin/runit \
     --name "autoreboot" \
     --command "sleep 1h && sudo reboot"
 ```

@@ -133,7 +133,7 @@ echo "#!/bin/bash" > "$finish_path"
 echo "set -x" >> "$finish_path"
 echo "exec 2>&1" >> "$finish_path"  # redirect all stderr to stdout for svlogd
 echo "su $user" >> "$finish_path"
-echo "$exit_command" >> "$finish_path"
+echo "[ ! \$1 -eq 0 ] && $exit_command" >> "$finish_path"  # run if main command exited nonzero
 chmod +x "$finish_path"
 
 # write logging config to /etc/sv/{name}/log/run and make executable
