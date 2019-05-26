@@ -85,3 +85,6 @@ echo "restarting network interfaces"
 ifdown --all
 ifup --all
 echo "success"
+
+echo "restarting to apply changes"
+reboot

@@ -111,4 +111,6 @@ echo "applying changes"
 echo "WARNING: if you are connected by SSH, this will drop your connection"
 ifconfig eth0 "192.168.$SUBNET.$HOST" netmask "255.255.255.0"
 ifconfig wlan0 "192.168.$SUBNET.$HOST" netmask "255.255.255.0"
-echo "success"
+
+echo "success: restarting to apply changes"
+reboot
