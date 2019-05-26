@@ -95,6 +95,11 @@ if [ -z "$user" ]; then
     user=$(whoami)
 fi
 
+# just print a message if no error command is set
+if [ -z "$exit_command" ]; then
+    exit_command='echo "script exited with nonzero exit code \$1"'
+fi
+
 # use default if delay is not specified
 if [ -z "$delay" ]; then
     delay=$DEFAULT_DELAY_SECONDS
