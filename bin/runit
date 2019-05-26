@@ -97,11 +97,6 @@ if [ -z "$command" ]; then
     exit 1
 fi
 
-# use the current user to execute the command if not otherwise set
-if [ -z "$user" ]; then
-    user=$(whoami)
-fi
-
 # just print a message if no error command is set
 if [ -z "$exit_command" ]; then
     exit_command='echo "script exited with nonzero exit code $1"'
@@ -145,7 +140,7 @@ run_path="/etc/sv/$name/run"
 echo "#!/bin/bash" > "$run_path"
 echo "set -x" >> "$run_path"
 echo "exec 2>&1" >> "$run_path"  # redirect all stderr to stdout for svlogd
-echo "su $user" >> "$run_path"
+[ ! -z $user ] && echo "su $user" >> "$finish_path"  # assume other user if provided
 echo "$command" >> "$run_path"
 echo "sleep $delay" >> "$run_path"
 chmod +x "$run_path"
@@ -155,7 +150,7 @@ finish_path="/etc/sv/$name/finish"
 echo "#!/bin/bash" > "$finish_path"
 echo "set -x" >> "$finish_path"
 echo "exec 2>&1" >> "$finish_path"  # redirect all stderr to stdout for svlogd
-echo "su $user" >> "$finish_path"
+[ ! -z $user ] && echo "su $user" >> "$finish_path"  # assume other user if provided
 echo "[ ! \$1 -eq 0 ] && $exit_command" >> "$finish_path"  # run if main command exited nonzero
 chmod +x "$finish_path"
 
