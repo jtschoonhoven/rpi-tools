@@ -90,7 +90,7 @@ if [ "$(ls -A "$path")" ]; then
 fi
 
 # mount the volume at the given path
-for volume_path in /dev/sda*; do
+for volume_path in /dev/sd*; do
     [ -b "$volume_path" ] || continue  # "-b" checks if the path is a "block device", e.g. a flash or disk drive
     if mount "$volume_path" "$path" 2> /dev/null; then
         echo "mounted drive $volume_path to $path"
