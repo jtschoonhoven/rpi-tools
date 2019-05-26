@@ -140,7 +140,7 @@ run_path="/etc/sv/$name/run"
 echo "#!/bin/bash" > "$run_path"
 echo "set -x" >> "$run_path"
 echo "exec 2>&1" >> "$run_path"  # redirect all stderr to stdout for svlogd
-[ ! -z $user ] && echo "su $user" >> "$finish_path"  # assume other user if provided
+[ ! -z $user ] && echo "su $user" >> "$run_path"  # assume other user if provided
 echo "$command" >> "$run_path"
 echo "sleep $delay" >> "$run_path"
 chmod +x "$run_path"
