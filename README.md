@@ -29,6 +29,14 @@ sudo bin/runit \
     --delay-seconds 0
 ```
 
+## Run A Python Process Forever
+```sh
+sudo bin/runit \
+    --name "ledmatrix" \
+    --command "PYTHONPATH=/home/pi/ledmatrix:$PYTHONPATH python3 /home/pi/ledmatrix/ledmatrix/animations/ticker.py --cols=42 --file /mnt/usb/ticker.txt" \
+    --delay-seconds 0
+```
+
 ### Automatically Reboot Every Hour
 ```sh
 sudo bin/runit \
