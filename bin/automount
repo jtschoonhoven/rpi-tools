@@ -83,10 +83,9 @@ if [ ! -z $unmount ]; then
     exit 0
 fi
 
-# exit if a volume is already mounted at the given path
-if grep -qs "$path " /proc/mounts; then
-    set -- $(grep "$path " /proc/mounts)  # see https://stackoverflow.com/a/2440602
-    echo "volume $1 is already mounted at $path: exiting"
+# exit if there is already data at the given mount path
+if [ "$(ls -A "$path")" ]; then
+    echo "cannot mount to $path: directory is not empty (already mounted?)"
     exit 1 
 fi
 
