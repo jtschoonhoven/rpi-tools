@@ -8,7 +8,8 @@ CLI utilities for working with Raspberry Pis.
 sudo bin/runit \
     --name "autopull" \
     --command "/home/pi/rpi-tools/bin/pull_all --dir /home/pi" \
-    --delay-seconds 30
+    --delay-seconds 30 \
+    --user pi
 ```
 
 ### Automatically Mount Storage Volumes to /mnt/usb
