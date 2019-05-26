@@ -79,7 +79,7 @@ done
 
 # ensure script is run as root
 if [ "$(id -u)" != "0" ]; then
-  echo "permission denied (try sudo)"
+  echo "permission denied (try sudo)" >&2
   exit 1
 fi
 
@@ -92,9 +92,11 @@ fi
 
 # command is always required
 if [ -z "$command" ]; then
-    echo "ERROR: --command (-c) is a required argument" >&2
-    help
-    exit 1
+    if [ -z "$remove" ]; then
+        echo "ERROR: --command (-c) is a required argument" >&2
+        help
+        exit 1
+    fi
 fi
 
 # just print a message if no error command is set
