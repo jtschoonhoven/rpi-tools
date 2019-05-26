@@ -31,6 +31,9 @@ OPTIONS
     -d, --delay-seconds
         optional time to wait after the executable is called before running again
 
+    -rm, --remove
+        delete the runit-managed task named by the -n, --name flag
+
 EOF
 }
 
@@ -57,6 +60,10 @@ while (( "$#" )); do
         -d|--delay-seconds)
             delay="$2"
             shift 2
+            ;;
+        -rm|--remove)
+            remove=1
+            shift 1
             ;;
         --) # end argument parsing
             shift
@@ -97,7 +104,7 @@ fi
 
 # just print a message if no error command is set
 if [ -z "$exit_command" ]; then
-    exit_command='echo "script exited with nonzero exit code \$1"'
+    exit_command='echo "script exited with nonzero exit code $1"'
 fi
 
 # use default if delay is not specified
@@ -114,7 +121,18 @@ for PACKAGE in $DEPENDENCIES; do
     fi
 done
 
-echo "installing command "$name" to /etc/sv/$name"
+# delete all associated files if --remove flag is set
+if [ ! -z $remove ]; then
+    echo "removing command \"$name\""
+    sv force-stop "/etc/service/$name/log"
+    sv force-stop "/etc/service/$name"
+    rm -rf "/etc/service/$name"
+    rm -rf "/etc/sv/$name"
+    rm -rf "/var/log/$name"
+    exit 0
+fi
+
+echo "installing command \"$name\" to /etc/sv/$name"
 
 # create directories and files used by runit
 mkdir -p "/var/log/$name"
