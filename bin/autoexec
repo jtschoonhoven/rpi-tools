@@ -1,0 +1,93 @@
+#!/bin/bash
+DEFAULT_EXECUTABLE_PATH="/mnt/usb/exec"
+RETRY_DELAY_SECONDS=10
+
+set -e
+
+help() {
+cat << EOF
+
+DESCRIPTION
+    call an executable each time it is created or modified
+
+USAGE
+    ./autoexec --path /mnt/usb/exec --daemon
+
+OPTIONS
+    -p, --path
+        optional path to the executable (defaults to /mnt/usb/exec)
+    
+    -d, --daemon
+        if set, runs forever in "daemon mode"
+
+EOF
+}
+
+# parse args https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
+PARAMS=""
+while (( "$#" )); do
+    case "$1" in
+        -p|--path)
+            path="$2"
+            shift 2
+            ;;
+        -d|--daemon)
+            daemon=1
+            shift 1
+            ;;
+        --) # end argument parsing
+            shift
+            break
+            ;;
+        -*|--*=) # unsupported flags
+            echo "invalid option $1" >&2
+            help
+            exit 1
+            ;;
+    esac
+done
+
+# ensure script is run as root
+if [ "$(id -u)" != "0" ]; then
+  echo "permission denied (try sudo)"
+  exit 1
+fi
+
+# use default path if not specified
+if [ -z "$path" ]; then
+    path=$DEFAULT_EXECUTABLE_PATH
+fi
+
+# execute file once each time it is modified
+while true; do
+    # rest until file is available
+    if [ ! -f $path ]; then
+        echo "no file exists at $path: sleeping $RETRY_DELAY_SECONDS seconds"
+        sleep $RETRY_DELAY_SECONDS
+        continue
+    fi
+
+    # get SHA1 of file to track changes
+    sha=$(shasum $path)
+
+    # execute file and append output to a logfile
+    if $path | tee -a "$path.log"; then
+        exit_code=$?
+        echo "successfully executed file at $path"
+    else
+        exit_code=$?
+        echo "failed to execute file at $path"
+    fi
+
+    # if this is not being run as a daemon process, simply exit
+    if [ -z $daemon ]; then
+        exit $exit_code
+    fi
+
+    # if this is a daemon process, rest until the SHA changes
+    while [ "$sha" = "$(shasum $path)" ]; do
+        echo "waiting for file changes at $path: sleeping $RETRY_DELAY_SECONDS"
+        sleep $RETRY_DELAY_SECONDS
+        continue
+    done
+done

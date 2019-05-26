@@ -20,6 +20,14 @@ sudo bin/runit \
     --delay-seconds 5
 ```
 
+### Automatically Execute a File on a USB Drive Each Time It Is Mounted
+```sh
+sudo bin/runit \
+    --name "autoexec" \
+    --command "/home/pi/rpi-tools/bin/autoexec --path /mnt/usb/exec --daemon" \
+    --delay-seconds 0
+```
+
 ### Automatically Reboot Every Hour
 ```sh
 sudo bin/runit \
@@ -29,6 +37,22 @@ sudo bin/runit \
 
 ## Commands
 CLI commands executable from the `bin` directory.
+
+### autoexec
+```
+DESCRIPTION
+    call an executable each time it is created or modified
+
+USAGE
+    ./autoexec --path /mnt/usb/exec --daemon
+
+OPTIONS
+    -p, --path
+        optional path to the executable (defaults to /mnt/usb/exec)
+    
+    -d, --daemon
+        if set, runs forever in "daemon mode"
+```
 
 ### automount
 ```
