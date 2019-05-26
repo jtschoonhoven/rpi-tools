@@ -3,11 +3,12 @@ CLI utilities for working with Raspberry Pis.
 
 ## Recipies
 
-### Automatically Run Git Pull For All Repos
+### Automatically Run Git Pull For All Repos in /home/pi
 ```sh
 sudo bin/runit \
     --name "autopull" \
-    --command "/home/pi/rpi_-ools/bin/pull_all --dir /path/to/source/dir"
+    --command "/home/pi/rpi-tools/bin/pull_all --dir /home/pi" \
+    --delay-seconds 30
 ```
 
 ### Automatically Mount Storage Volumes to /mnt/usb
