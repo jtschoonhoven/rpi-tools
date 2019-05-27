@@ -42,6 +42,7 @@ sudo bin/runit \
 sudo bin/runit \
     --name "kiosk" \
     --command "/home/pi/rpi-tools/bin/kiosk --dir /mnt/usb --images --video" \
+    --exit-command "/home/pi/rpi-tools/bin/kiosk" \
     --delay-seconds 0
 ```
 
