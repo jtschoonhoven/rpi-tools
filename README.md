@@ -37,6 +37,14 @@ sudo bin/runit \
     --delay-seconds 0
 ```
 
+## Run in "Kiosk Mode" Playing Media from Device
+```sh
+sudo bin/runit \
+    --name "kiosk" \
+    --command "/home/pi/rpi-tools/bin/kiosk --dir /mnt/usb --images --video" \
+    --delay-seconds 0
+```
+
 ### Automatically Reboot Every Hour
 ```sh
 sudo bin/runit \
@@ -86,6 +94,40 @@ DESCRIPTION
 
 USAGE
     ./install_common_deps
+```
+
+### kiosk
+```
+DESCRIPTION
+    kiosk mode supporting media playback from drive and network sources
+
+USAGE
+    ./kiosk --dir /mnt/usb --images --video --stream --port 8080 --udp-timeout 3 --img-timeout 4 --cleanup
+
+OPTIONS
+    -d, --dir
+        path to directory containing media files (default is /mnt/usb)
+
+    -i, --images
+        set this flag to enable "slideshow mode" so the kiosk rotates through image files
+        if paired with video or streaming, one random image will be shown between videos or streams
+
+    -v, --video
+        set this flag to enable "video mode" so the kiosk rotates through video files
+        if paired with streaming or images, one random video will be shown between images or streams
+
+    -s, --stream
+        set this flag to enable "streaming mode" so the kiosk will listen for streamed media over UDP
+        if paired with video or images, kiosk will fall back to other media when stream is interrupted
+
+    -p, --port
+        port to listen to for UDP-streamed media (default is 8080)
+
+    --udp-timeout
+        UDP TTL in seconds for streaming
+
+    --img-timeout
+        time to display images for in seconds
 ```
 
 ### multi_ssh
@@ -146,7 +188,7 @@ DESCRIPTION
     assumes netmask 255.255.255.0
 
 USAGE
-    ./set_static_ip --host 254 --subnet 1
+    ./set_ip --host 254 --subnet 1
 
 OPTIONS
     -s, --subnet
