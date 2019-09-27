@@ -1,0 +1,52 @@
+#!/bin/bash
+set -euo pipefail
+
+help() {
+cat << EOF
+
+DESCRIPTION
+    execute a command when a given key is pressed
+
+USAGE
+    ./hotkeys -a 'echo "you pressed a"' -b 'echo "you pressed b"'
+
+OPTIONS
+    -{char}
+        a single-character flag followed by the command to run when this key is pressed
+
+EOF
+}
+
+
+# require at least one argument
+if (( $# < 2 )); then
+    echo "ERROR: at least one command is required" >&2
+    help
+    exit 1
+fi
+
+
+# validate argument flags
+for (( arg_index = 1; arg_index <= $#; arg_index+=2)); do
+    if [[ ! ${!arg_index} =~ ^-.$ ]]; then
+        echo "ERROR: argument flags must match the pattern -{char}" >&2
+        help
+        exit 1
+    fi
+done
+
+
+# loop forever and listen for keystrokes than match a command
+while read -rsn1 char; do  # -rsn1 means read one character from stdin and do not echo it back
+    echo "Keypress: '$char'";
+    # loop through all arguments, one at a time
+    for (( arg_index = 1; arg_index <= $#; arg_index+=2)); do
+        # execute the command matching the given keypress
+        if [ "${!arg_index}" == "-$char" ]; then
+            cmd_index=$((arg_index + 1))
+            cmd="${!cmd_index}"  # the ${!arg} notation expands to the variable at that index
+            echo "Matched command \"$cmd\""
+            eval ${cmd} 2>&1
+        fi
+    done
+done
