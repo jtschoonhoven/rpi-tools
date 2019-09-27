@@ -67,7 +67,7 @@ USAGE
 OPTIONS
     -p, --path
         optional path to the executable (defaults to /mnt/usb/exec)
-    
+
     -d, --daemon
         if set, runs forever in "daemon mode"
 ```
@@ -86,6 +86,19 @@ OPTIONS
 
     -u, --unmount
         optionally set this flag to *un*mount a volume mounted to the given path
+```
+
+### hotkeys
+```
+DESCRIPTION
+    execute a command when a given key is pressed
+
+USAGE
+    ./hotkeys -a 'echo "you pressed a"' -b 'echo "you pressed b"'
+
+OPTIONS
+    -{char}
+        a single-character flag followed by the command to run when this key is pressed
 ```
 
 ### install_common_deps
@@ -145,7 +158,7 @@ OPTIONS
 
     -h, --host
         hostname or IP to access
-    
+
     -c, --command
         command to execute on each remote client
 ```
@@ -194,7 +207,7 @@ USAGE
 OPTIONS
     -s, --subnet
         the subnet of the IP address (xxx.xxx.SUBNET.xxx)
-    
+
     -h, --host
         the host part of the address (xxx.xxx.xxx.HOST)
 ```
@@ -210,7 +223,7 @@ USAGE
 OPTIONS
     -s, --ssid
         name of network to connect to
-    
+
     -p, --password
         network password
 ```
