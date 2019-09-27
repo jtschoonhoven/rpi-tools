@@ -12,12 +12,12 @@ DESCRIPTION
     assumes netmask 255.255.255.0
 
 USAGE
-    ./set_static_ip --host 254 --subnet 1
+    ./set_ip --host 254 --subnet 1
 
 OPTIONS
     -s, --subnet
         the subnet of the IP address (xxx.xxx.SUBNET.xxx)
-    
+
     -h, --host
         the host part of the address (xxx.xxx.xxx.HOST)
 

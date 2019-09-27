@@ -53,6 +53,14 @@ sudo bin/runit \
     --command "sleep 1h && sudo reboot"
 ```
 
+### Map Hotkeys to Commands
+```sh
+sudo bin/hotkeys \
+    -z 'PYTHONPATH=/home/pi/ledmatrix:$PYTHONPATH python3 /home/pi/ledmatrix/ledmatrix/animations/color_cycle.py --cols=42 --rows=7 -t 100' \
+    -a 'PYTHONPATH=/home/pi/ledmatrix:$PYTHONPATH python3 /home/pi/ledmatrix/ledmatrix/animations/game_of_life.py --cols=42 --rows=7' \
+    -x 'PYTHONPATH=/home/pi/ledmatrix:$PYTHONPATH python3 /home/pi/ledmatrix/ledmatrix/animations/strobe.py --cols=42 --rows=7 -t 100'
+```
+
 ## Commands
 CLI commands executable from the `bin` directory.
 
@@ -86,19 +94,6 @@ OPTIONS
 
     -u, --unmount
         optionally set this flag to *un*mount a volume mounted to the given path
-```
-
-### hotkeys
-```
-DESCRIPTION
-    execute a command when a given key is pressed
-
-USAGE
-    ./hotkeys -a 'echo "you pressed a"' -b 'echo "you pressed b"'
-
-OPTIONS
-    -{char}
-        a single-character flag followed by the command to run when this key is pressed
 ```
 
 ### install_common_deps
