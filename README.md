@@ -55,7 +55,7 @@ sudo bin/runit \
 
 ### Map Hotkeys to Commands
 ```sh
-sudo bin/hotkeys \
+bin/hotkeys \
     -z 'PYTHONPATH=/home/pi/ledmatrix:$PYTHONPATH python3 /home/pi/ledmatrix/ledmatrix/animations/color_cycle.py --cols=42 --rows=7 -t 100' \
     -a 'PYTHONPATH=/home/pi/ledmatrix:$PYTHONPATH python3 /home/pi/ledmatrix/ledmatrix/animations/game_of_life.py --cols=42 --rows=7' \
     -x 'PYTHONPATH=/home/pi/ledmatrix:$PYTHONPATH python3 /home/pi/ledmatrix/ledmatrix/animations/strobe.py --cols=42 --rows=7 -t 100'

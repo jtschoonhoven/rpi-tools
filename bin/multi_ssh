@@ -9,28 +9,28 @@ DESCRIPTION
     execute shell commands across one or more remote hosts
 
 USAGE
-    ./multi_ssh --user pi --command "sudo reboot" --host 127.0.0.1 --host 127.0.0.2
+    ./multi_ssh --command "sudo reboot" --async --host user@127.0.0.1 --host user@127.0.0.2
 
 OPTIONS
-    -u, --user
-        username to log in with
-
     -h, --host
-        hostname or IP to access
-    
+        user and hostname/IP to access
+
     -c, --command
         command to execute on each remote client
+
+    -a, --async
+        execute commands asynchronously
+
+    -w, --wait
+        wait for all commands to finish before exiting
 
 EOF
 }
 
+
 # parse args https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
 while (( "$#" )); do
     case "$1" in
-        -u|--user)
-            USER=$2
-            shift 2
-            ;;
         -h|--host)
             HOST=$2
             HOSTS+=( $HOST )
@@ -39,6 +39,14 @@ while (( "$#" )); do
         -c|--command)
             COMMAND=$2
             shift 2
+            ;;
+        -a|--async)
+            ASYNC=1
+            shift 1
+            ;;
+        -w|--wait)
+            WAIT=1
+            shift 1
             ;;
         --) # end argument parsing
             shift
@@ -52,6 +60,7 @@ while (( "$#" )); do
     esac
 done
 
+
 # at least one host is required
 if [ -z "$HOST" ]; then
     echo "ERROR: --host (-h) is a required argument" >&2
@@ -59,15 +68,32 @@ if [ -z "$HOST" ]; then
     exit 1
 fi
 
+
 # use default if command is not specified
 if [ -z "$COMMAND" ]; then
     COMMAND=$DEFAULT_COMMAND
 fi
 
+
+pids=()
 for host in ${HOSTS[@]}; do
-    command="ssh ${USER}@${host} ${COMMAND}"
-    echo "executing command for ${USER}@${host}"
-    eval ${command} 2>&1
+    command='ssh $host "$COMMAND"'
+    echo "executing command for $host"
+    if [ ! -z "$ASYNC" ]; then
+        eval "${command}" 2>&1 &
+        pids+=($!)
+    else
+        eval "${command}" 2>&1
+    fi
 done
 
-echo "success"
+
+# wait for all commands to complete
+if [ ! -z "$WAIT" ]; then
+    for pid in "${pids[@]}"; do
+        wait "$pid"
+    done
+fi
+
+
+echo "done"
